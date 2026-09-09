@@ -91,7 +91,10 @@ export const DEFAULT_HTTP_WRITE_RATE_LIMIT: FixedWindowRateLimitConfig = {
 };
 
 export const DEFAULT_HTTP_MAX_REQUEST_BODY_BYTES = 8 * 1024 * 1024;
-export const DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS = 10 * 60 * 1000;
+// Stateful MCP clients commonly keep a session open for days. Session count
+// remains bounded separately, so idle reclamation is opt-in to avoid forcing
+// clients to reinitialize and re-authenticate after a quiet period.
+export const DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS = 0;
 export const DEFAULT_HTTP_MAX_SESSIONS = 128;
 
 function parsePositiveInteger(
@@ -107,6 +110,24 @@ function parsePositiveInteger(
 
   if (!Number.isInteger(parsed) || parsed <= 0) {
     throw new Error(`${envName} must be a positive integer.`);
+  }
+
+  return parsed;
+}
+
+function parseNonNegativeInteger(
+  value: string | undefined,
+  envName: string,
+  defaultValue: number
+) {
+  if (value === undefined) {
+    return defaultValue;
+  }
+
+  const parsed = Number(value);
+
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    throw new Error(`${envName} must be a non-negative integer.`);
   }
 
   return parsed;
@@ -279,7 +300,7 @@ export function loadServerMetadataConfig(
       source.MCP_HTTP_ALLOWED_ORIGINS,
       "MCP_HTTP_ALLOWED_ORIGINS"
     ),
-    httpSessionIdleTimeoutMs: parsePositiveInteger(
+    httpSessionIdleTimeoutMs: parseNonNegativeInteger(
       source.MCP_HTTP_SESSION_IDLE_TIMEOUT_MS,
       "MCP_HTTP_SESSION_IDLE_TIMEOUT_MS",
       DEFAULT_HTTP_SESSION_IDLE_TIMEOUT_MS

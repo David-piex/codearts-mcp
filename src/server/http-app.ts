@@ -605,40 +605,42 @@ export function createHttpApp(
     return count;
   }
 
-  const sessionCleanupTimer = setInterval(() => {
-    const now = Date.now();
+  if (sessionIdleTimeoutMs > 0) {
+    const sessionCleanupTimer = setInterval(() => {
+      const now = Date.now();
 
-    for (const [routeKey, transports] of transportsByRoute) {
-      const activity = lastActivityByRoute.get(routeKey);
-      const activeRequests = activeRequestsByRoute.get(routeKey);
+      for (const [routeKey, transports] of transportsByRoute) {
+        const activity = lastActivityByRoute.get(routeKey);
+        const activeRequests = activeRequestsByRoute.get(routeKey);
 
-      if (!activity) {
-        continue;
-      }
+        if (!activity) {
+          continue;
+        }
 
-      for (const [sessionId, transport] of Object.entries(transports)) {
-        const lastActivityAt = activity.get(sessionId) ?? now;
-        const activeRequestCount = activeRequests?.get(sessionId) ?? 0;
+        for (const [sessionId, transport] of Object.entries(transports)) {
+          const lastActivityAt = activity.get(sessionId) ?? now;
+          const activeRequestCount = activeRequests?.get(sessionId) ?? 0;
 
-        if (
-          activeRequestCount === 0 &&
-          now - lastActivityAt >= sessionIdleTimeoutMs
-        ) {
-          delete transports[sessionId];
-          activity.delete(sessionId);
-          activeRequests?.delete(sessionId);
-          void transport.close().catch(() => undefined);
+          if (
+            activeRequestCount === 0 &&
+            now - lastActivityAt >= sessionIdleTimeoutMs
+          ) {
+            delete transports[sessionId];
+            activity.delete(sessionId);
+            activeRequests?.delete(sessionId);
+            void transport.close().catch(() => undefined);
+          }
+        }
+
+        if (Object.keys(transports).length === 0) {
+          transportsByRoute.delete(routeKey);
+          lastActivityByRoute.delete(routeKey);
+          activeRequestsByRoute.delete(routeKey);
         }
       }
-
-      if (Object.keys(transports).length === 0) {
-        transportsByRoute.delete(routeKey);
-        lastActivityByRoute.delete(routeKey);
-        activeRequestsByRoute.delete(routeKey);
-      }
-    }
-  }, Math.min(sessionIdleTimeoutMs, 60_000));
-  sessionCleanupTimer.unref?.();
+    }, Math.min(sessionIdleTimeoutMs, 60_000));
+    sessionCleanupTimer.unref?.();
+  }
 
   function getRouteServerFactory(route: ResolvedMcpRoute) {
     const cached = serverFactoryByRoute.get(route.routeKey);
@@ -673,7 +675,7 @@ export function createHttpApp(
       const url = new URL(req.url, "http://127.0.0.1");
       const resolvedRoute = resolveMcpRoute(url.pathname, enabledProductFamilies);
       const sessionIdHeader = req.headers["mcp-session-id"];
-      const sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
+      let sessionId = Array.isArray(sessionIdHeader) ? sessionIdHeader[0] : sessionIdHeader;
       const requestLogDetails: HttpRequestLogEntry = {
         method: req.method,
         path: url.pathname,
@@ -812,9 +814,20 @@ export function createHttpApp(
             sessionStore.bind(sessionId!, authContext.authId);
           }
 
-          if (sessionId && !transport) {
+          // Some clients keep sending the previous MCP session ID on their
+          // reconnect initialize request. Treat that request as a fresh
+          // session so auth headers/cookies can be reused without a manual
+          // auth_configure_session call.
+          const staleSessionInitialization =
+            sessionId !== undefined && !transport && isInitializeRequest(parsedBody);
+
+          if (sessionId && !transport && !staleSessionInitialization) {
             writeJson(res, 404, { error: "Unknown MCP session ID." });
             return;
+          }
+
+          if (staleSessionInitialization) {
+            sessionId = undefined;
           }
 
           if (!transport) {

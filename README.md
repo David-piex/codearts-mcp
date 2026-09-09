@@ -491,7 +491,7 @@ Live 状态说明：
 | `MCP_HTTP_PORT` | HTTP 监听端口 | `3000` |
 | `MCP_HTTP_HOST` | HTTP 监听地址；本地默认只监听回环地址，共享/容器部署需显式设为 `0.0.0.0` | `127.0.0.1` |
 | `MCP_HTTP_ALLOWED_ORIGINS` | 允许携带 `Origin` 访问 `/mcp` 的浏览器来源，多个值用英文逗号分隔 | — |
-| `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒），用于避免异常断开会话长期占用内存 | `600000`（10 分钟） |
+| `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | 无请求的有状态 MCP 会话回收时间（毫秒）；`0` 表示不因空闲主动失效，改用 `MCP_HTTP_MAX_SESSIONS` 控制内存 | `0`（关闭） |
 | `MCP_HTTP_MAX_SESSIONS` | 单个共享 HTTP 实例允许保留或正在初始化的 MCP session 总数；达到上限时新的初始化请求返回 `429` | `128` |
 | `MCP_HTTP_MAX_REQUEST_BODY_BYTES` | HTTP MCP JSON 请求体最大字节数；超限请求返回 `413`，用于防止恶意或误配置请求耗尽内存 | `8388608`（8 MiB） |
 | `NODE_OPTIONS` | Node.js 运行时参数；共享容器默认将堆上限设为 2560 MB | `--max-old-space-size=2560` |

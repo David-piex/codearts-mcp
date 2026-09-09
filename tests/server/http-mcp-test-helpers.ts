@@ -49,7 +49,7 @@ export async function startTestHttpServer(
       serverName: "codearts-mcp",
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
-      httpSessionIdleTimeoutMs: 10 * 60 * 1000,
+      httpSessionIdleTimeoutMs: 0,
       httpMaxSessions: 128,
       httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],

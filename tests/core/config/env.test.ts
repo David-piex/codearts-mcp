@@ -109,7 +109,7 @@ describe("loadServerMetadataConfig", () => {
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
       httpPort: 3100,
-      httpSessionIdleTimeoutMs: 600_000,
+      httpSessionIdleTimeoutMs: 0,
       httpMaxSessions: 128,
       httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],
@@ -145,7 +145,7 @@ describe("loadServerMetadataConfig", () => {
       serverVersion: "0.1.0",
       httpHost: "127.0.0.1",
       httpPort: 3000,
-      httpSessionIdleTimeoutMs: 600_000,
+      httpSessionIdleTimeoutMs: 0,
       httpMaxSessions: 128,
       httpMaxRequestBodyBytes: 8 * 1024 * 1024,
       httpAllowedOrigins: [],
@@ -206,6 +206,14 @@ describe("loadServerMetadataConfig", () => {
       httpSessionIdleTimeoutMs: 900_000,
       httpMaxSessions: 32
     });
+
+    expect(
+      loadServerMetadataConfig({
+        MCP_SERVER_NAME: "codearts-mcp",
+        MCP_SERVER_VERSION: "0.1.0",
+        MCP_HTTP_SESSION_IDLE_TIMEOUT_MS: "0"
+      }).httpSessionIdleTimeoutMs
+    ).toBe(0);
 
     expect(() =>
       loadServerMetadataConfig({

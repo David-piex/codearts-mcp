@@ -118,6 +118,33 @@ describe("http app", () => {
     await response.arrayBuffer();
   });
 
+  it("keeps idle MCP sessions when idle reclamation is disabled", async () => {
+    const { port } = await startConfiguredServer({
+      config: {
+        httpSessionIdleTimeoutMs: 0
+      }
+    });
+    const initialized = await initializeSession(port);
+    const sessionId = initialized.sessionId;
+
+    expect(sessionId).toBeTruthy();
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const response = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "after-disabled-idle-timeout",
+        method: "tools/list",
+        params: {}
+      },
+      { sessionId: sessionId ?? undefined }
+    );
+
+    expect(response.status).toBe(200);
+    await response.arrayBuffer();
+  });
+
   it("limits retained and concurrently initializing MCP sessions", async () => {
     const { port } = await startConfiguredServer({
       config: {
@@ -560,6 +587,54 @@ describe("http app", () => {
     expect(unknownSessionResponse.body).toEqual({
       error: "Unknown MCP session ID."
     });
+  });
+
+  it("accepts initialize with a stale session ID and reuses client credentials", async () => {
+    const headers = {
+      "x-codearts-ak": "client-ak",
+      "x-codearts-sk": "client-sk",
+      "x-codearts-region": "cn-north-4"
+    };
+    const { port } = await servers.start(
+      createTestHttpAuthConfig({ allowClientCredentialHeaders: true })
+    );
+    const first = await initializeSession(port, { headers });
+    const firstSessionId = first.sessionId;
+
+    expect(first.response.status).toBe(200);
+    expect(firstSessionId).toBeTruthy();
+
+    const deleted = await fetch(`http://127.0.0.1:${port}/mcp/req`, {
+      method: "DELETE",
+      headers: {
+        accept: "application/json, text/event-stream",
+        "mcp-session-id": firstSessionId ?? "",
+        ...headers
+      }
+    });
+    expect(deleted.status).toBe(200);
+
+    const reinitialized = await postJsonRpc(
+      port,
+      {
+        jsonrpc: "2.0",
+        id: "reconnect-init",
+        method: "initialize",
+        params: {
+          protocolVersion: MCP_PROTOCOL_VERSION,
+          capabilities: {},
+          clientInfo: { name: "vitest", version: "0.1.0" }
+        }
+      },
+      {
+        sessionId: firstSessionId ?? undefined,
+        headers
+      }
+    );
+
+    expect(reinitialized.status).toBe(200);
+    expect(reinitialized.headers.get("mcp-session-id")).toBeTruthy();
+    expect(reinitialized.headers.get("mcp-session-id")).not.toBe(firstSessionId);
   });
 
   it("distinguishes missing and unknown MCP session IDs for DELETE requests", async () => {
